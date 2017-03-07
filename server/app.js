@@ -26,6 +26,12 @@ function(req, res) {
   res.render('index');
 });
 
+app.get('/signup', 
+  function(req, res) {
+    res.render('signup');
+  });
+
+
 app.get('/create', 
 function(req, res) {
   res.render('index');
@@ -42,6 +48,25 @@ function(req, res, next) {
     next({ status: 500, error: error });
   });
 });
+
+app.post('/signup', 
+  function (req, res, next) {
+      //NOTE:  We were trying to figure outt if we need the checkUserExists function
+      //since our table is set up to reject duplicates.  We also haven't finished debugging the function.
+
+
+    //console.log('Here is the number hopefully, ', test);
+    //  // if this retuns a numbers over zero
+    // if (Users.checkUserExists(req.body)) {
+    // // we continue to add username and hashed password
+    // } else {
+    // // redirect the user to our
+    // }
+    
+
+    Users.addUser(req.body);
+    res.end();
+  });
 
 app.post('/links', 
 function(req, res, next) {

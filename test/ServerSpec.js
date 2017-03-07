@@ -45,9 +45,9 @@ describe('', function() {
     });
 
     /**************************************************************************************/
-    /* TODO: If you create a new MySQL tables, add it to the tablenames collection below. */
+    /* TODO: If you create a new MySQL table, add it to the tablenames collection below. */
     /**************************************************************************************/
-    var tablenames = ['links', 'clicks'
+    var tablenames = ['links', 'clicks', 'users'
 ];
 
     db.connect(function(err) {
@@ -125,7 +125,7 @@ describe('', function() {
     });
   });
 
-  xdescribe('Account Creation:', function() {
+  describe('Account Creation:', function() {
 
     it('signup creates a new user record', function(done) {
       var options = {
