@@ -17,6 +17,15 @@ exports.isValidUrl = function(url) {
   return url.match(rValidUrl);
 };
 
+exports.hashPassword = function(password) {
+
+  var shasum = crypto.createHash('sha1');
+  shasum.update(password);
+  password = shasum.digest('hex');
+  
+  return password;
+};
+
 /************************************************************/
 // Add additional utility functions below
 /************************************************************/

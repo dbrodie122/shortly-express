@@ -1,6 +1,6 @@
 var express = require('express');
 var path = require('path');
-var util = require('./lib/utility');
+var utils = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
 
@@ -21,15 +21,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static files from ../public directory
 app.use(express.static(path.join(__dirname, '../public')));
 
+app.get('/signup', 
+  function(req, res) {
+    res.render('signup');
+  });
+
+
 app.get('/', 
 function(req, res) {
   res.render('index');
 });
 
-app.get('/signup', 
-  function(req, res) {
-    res.render('signup');
-  });
+app.get('/login', 
+function(req, res) {
+  res.render('login');
+});
 
 
 app.get('/create', 
@@ -64,15 +70,45 @@ app.post('/signup',
     // }
     
 
-    Users.addUser(req.body);
-    res.end();
+    Users.checkUserExists(req.body, function(value) {
+      if (value) {
+        console.log('user exists, redirecting');
+        res.redirect('/signup');
+      } else {
+        console.log('new user, adding to database');
+        Users.addUser(req.body);
+        res.redirect('/');
+        // Question 2: DO WE NEED CALLBACK HERE, does res.end need to be in the callback due to async?
+      }
+    });
+    
+    
+    // Question 1:  OLD THING WE THOUGHT WOULD WORK
+    // Users.checkUserExists(req.body);
+
+
+    // {
+    //   console.log('USER EXISTS ALREADY DUMMY', Users.checkUserExists(req.body));
+    // } else {
+    //   console.log('YOU ENTERED A NEW USER', Users.checkUserExists(req.body));
+    //   // we run addUser
+    // }
+    // // Users.addUser(req.body);
+    // // res.end();
+  });
+//we were working on making the post request work and also we were testing out the loginuser function
+app.post('/login', 
+  function (req, res, next) {
+    utils.loginUser(req.body, function(value) {
+      console.log('result of querying db for password', value);
+    });
   });
 
 app.post('/links', 
 function(req, res, next) {
   var uri = req.body.url;
 
-  if (!util.isValidUrl(uri)) {
+  if (!utils.isValidUrl(uri)) {
     // send back a 404 if link is not valid
     return next({ status: 404 });
   }
@@ -83,7 +119,7 @@ function(req, res, next) {
       var existingLink = results[0];
       throw existingLink;
     }
-    return util.getUrlTitle(uri);
+    return utils.getUrlTitle(uri);
   })
   .then(function(title) {
     return Links.addOne({
