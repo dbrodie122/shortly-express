@@ -31,6 +31,14 @@ module.exports = function(db) {
       CONSTRAINT UNIQUE(username),\
       PRIMARY KEY (id)\
       );'); 
+  }).then(function() {
+    return db.queryAsync('CREATE TABLE IF NOT EXISTS sessions (\
+      id INTEGER NULL AUTO_INCREMENT,\
+      hash varchar(55),\
+      user_id VARCHAR(55),\
+      timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
+      PRIMARY KEY (id)\
+      );');
   })
   /************************************************************/
   /*          Add additional schema queries here              */

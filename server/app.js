@@ -3,6 +3,7 @@ var path = require('path');
 var utils = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
+var cookieParser = require('./middleware/cookieParser');
 
 var Users = require('./models/user');
 var Links = require('./models/link');
@@ -60,6 +61,7 @@ app.post('/signup',
       //NOTE:  We were trying to figure outt if we need the checkUserExists function
       //since our table is set up to reject duplicates.  We also haven't finished debugging the function.
 
+    // cookieParser.parseCookies(req, res, next);
 
     //console.log('Here is the number hopefully, ', test);
     //  // if this retuns a numbers over zero
@@ -68,6 +70,8 @@ app.post('/signup',
     // } else {
     // // redirect the user to our
     // }
+
+   // cookieParser.parseCookies(req, res, next);
     
 
     Users.checkUserExists(req.body, function(value) {
@@ -75,7 +79,7 @@ app.post('/signup',
         console.log('user exists, redirecting');
         res.redirect('/signup');
       } else {
-        console.log('new user, adding to database');
+        console.log(value);
         Users.addUser(req.body);
         res.redirect('/');
         // Question 2: DO WE NEED CALLBACK HERE, does res.end need to be in the callback due to async?
@@ -86,7 +90,6 @@ app.post('/signup',
     // Question 1:  OLD THING WE THOUGHT WOULD WORK
     // Users.checkUserExists(req.body);
 
-
     // {
     //   console.log('USER EXISTS ALREADY DUMMY', Users.checkUserExists(req.body));
     // } else {
@@ -96,13 +99,28 @@ app.post('/signup',
     // // Users.addUser(req.body);
     // // res.end();
   });
+
 //we were working on making the post request work and also we were testing out the loginuser function
 app.post('/login', 
   function (req, res, next) {
-    utils.loginUser(req.body, function(value) {
-      console.log('result of querying db for password', value);
+
+    Users.checkUserExists(req.body, function(value) {
+      if (!value) {
+        res.redirect('/login');
+      } else {
+        Users.loginUser(req.body, function(value) {
+          if (value) {
+            console.log('Successful Login');
+            res.redirect('/'); 
+          } else {
+            console.log('Bad login info');
+            res.redirect('/login');
+          }
+        });
+      }
     });
   });
+
 
 app.post('/links', 
 function(req, res, next) {

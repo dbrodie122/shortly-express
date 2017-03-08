@@ -16,7 +16,7 @@ var addUser = function(data) {
 
 var loginUser = function(data, callback) {
   // hash data.password
-  var hashedInputPassword = utils.hashedPassword(data.password);
+  var hashedInputPassword = utils.hashPassword(data.password);
   // select from queryString to get corresponding password to data.username
   var queryString = 'SELECT users.password FROM users WHERE username = ?';
   //query database to get the password that is associated with the username from data.username
@@ -25,7 +25,7 @@ var loginUser = function(data, callback) {
       throw err;
     } else {
       //use a callback to pass the results of doing a === comparison between hashedPassword and the password from the database.
-      callback(results);
+      callback(hashedInputPassword === results[0]['password']);
     }
   });
   // compare hashed pw with database pw
